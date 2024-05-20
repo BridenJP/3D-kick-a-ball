@@ -1,0 +1,30 @@
+[gd_scene load_steps=6 format=3 uid="uid://0dtt23qrfl8t"]
+
+[ext_resource type="Texture2D" uid="uid://cf5i5xu4ed2h0" path="res://Textures/football.jpg" id="1_3sija"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_6882d"]
+friction = 0.7
+bounce = 0.7
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_yyn0b"]
+radius = 0.11
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_q0h8q"]
+albedo_texture = ExtResource("1_3sija")
+
+[sub_resource type="SphereMesh" id="SphereMesh_nsb6c"]
+material = SubResource("StandardMaterial3D_q0h8q")
+radius = 0.11
+height = 0.22
+
+[node name="SoccerBall" type="RigidBody3D"]
+mass = 0.41
+physics_material_override = SubResource("PhysicsMaterial_6882d")
+linear_damp = 0.5
+angular_damp = 0.5
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("SphereShape3D_yyn0b")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_nsb6c")

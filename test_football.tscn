@@ -1,0 +1,94 @@
+[gd_scene load_steps=13 format=3 uid="uid://wmq0vlxg6tek"]
+
+[ext_resource type="Script" path="res://test_football.gd" id="1_fuu5j"]
+[ext_resource type="Texture2D" uid="uid://c2ihsbyhgrduv" path="res://Textures/marble_tiles_diff_1k.jpg" id="2_id6mh"]
+[ext_resource type="Texture2D" uid="uid://cq2kiao5dvp1o" path="res://Textures/marble_tiles_nor_gl_1k.jpg" id="3_4mopk"]
+[ext_resource type="Texture2D" uid="uid://dxhvcval5oqok" path="res://Textures/marble_tiles_rough_1k.jpg" id="4_in4i4"]
+[ext_resource type="PackedScene" uid="uid://0dtt23qrfl8t" path="res://Balls/soccer_ball.tscn" id="5_s8so0"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_co3xi"]
+rough = true
+absorbent = true
+
+[sub_resource type="WorldBoundaryShape3D" id="WorldBoundaryShape3D_i5cuu"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_p0ecq"]
+albedo_texture = ExtResource("2_id6mh")
+roughness_texture = ExtResource("4_in4i4")
+normal_enabled = true
+normal_texture = ExtResource("3_4mopk")
+uv1_scale = Vector3(10, 10, 10)
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_ujvmi"]
+material = SubResource("StandardMaterial3D_p0ecq")
+size = Vector2(40, 40)
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_u08k0"]
+friction = 0.7
+bounce = 0.2
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_bb6ou"]
+radius = 0.04
+height = 0.3
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_vsi41"]
+radius = 0.04
+height = 0.3
+
+[node name="TestFootball" type="Node3D"]
+script = ExtResource("1_fuu5j")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.866023, -0.433016, 0.250001, 0, 0.499998, 0.866027, -0.500003, 0.749999, -0.43301, 0, 0, 0)
+shadow_enabled = true
+
+[node name="Ground" type="StaticBody3D" parent="."]
+physics_material_override = SubResource("PhysicsMaterial_co3xi")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Ground"]
+shape = SubResource("WorldBoundaryShape3D_i5cuu")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Ground"]
+mesh = SubResource("PlaneMesh_ujvmi")
+
+[node name="Ball" parent="." instance=ExtResource("5_s8so0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.12, -0.360118)
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.707107, 0, 0.707107, 0, 1, 0, -0.707107, 0, 0.707107, 1, 0.5, 0.4)
+
+[node name="Leg" type="Node3D" parent="."]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0, 0, 0)
+
+[node name="KneeHingeJoint" type="HingeJoint3D" parent="Leg"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+node_a = NodePath("../Knee")
+node_b = NodePath("../Foot")
+angular_limit/enable = true
+angular_limit/upper = 1.74533
+angular_limit/lower = -1.74533
+
+[node name="Knee" type="StaticBody3D" parent="Leg"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.65, 0)
+
+[node name="Foot" type="RigidBody3D" parent="Leg"]
+transform = Transform3D(-4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0, 1, 0, 0.08, 0)
+mass = 15.0
+physics_material_override = SubResource("PhysicsMaterial_u08k0")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Leg/Foot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+shape = SubResource("CapsuleShape3D_bb6ou")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Leg/Foot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.1, 0)
+mesh = SubResource("CapsuleMesh_vsi41")
+skeleton = NodePath("../CollisionShape3D")
+
+[node name="StrengthLabel" type="Label" parent="."]
+offset_left = 10.0
+offset_top = 10.0
+offset_right = 50.0
+offset_bottom = 55.0
+theme_override_font_sizes/font_size = 32
+text = "0"
